@@ -11,11 +11,6 @@
             ></v-card-media>
           </v-flex>
         </v-layout>
-        <!-- <v-card-media
-          :src="albumImage"
-          height="125px"
-          contain
-        ></v-card-media> -->
       </v-flex>
       <v-flex xs8>
         <v-card-title primary-title>
@@ -57,6 +52,9 @@ export default {
     },
     albumImage: function () {
       return _.get(_.first(_.get(this.data, 'album.images', [])), 'url', '');
+    },
+    trackPreviewUrl: function () {
+      return _.get(this.data, 'preview_url', '');
     }
   }
 };
