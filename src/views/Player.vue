@@ -6,7 +6,7 @@
           <v-layout align-center justify-center>
             <v-flex xs12 sm6>
               <v-text-field
-                :loading="loadingSearch"
+                :loading="isSearching"
                 clearable
                 label="Search Spotify"
                 hint="For example, Tracks or Albums"
@@ -59,36 +59,51 @@ export default {
   data: () => {
     const Spotify = new SpotifyWebApi();
     return {
-      loadingSearch: false,
       searchQuerry: undefined,
+      isSearching: false,
+      oldSearchRequest: undefined,
       spotify: Spotify,
-      searchSpotify: _.throttle((query) => {
+      searchResults: [],
+      searchSpotify: _.throttle(function (query) {
+        this.isSearching = true;
         if (query) {
-          return Spotify.search(query, ['track', 'artist']).then(data => {
-            return data;
+          _.invoke(this.oldSearchRequest, 'abort'); // Abort old request (if it is still active)
+          this.oldSearchRequest = Spotify.search(query, ['track']).then(data => {
+            this.searchResults = _.get(data, 'tracks.items', []);
+            this.isSearching = false;
           });
         } else {
-          return Promise.try(() => { return {}; });
+          this.searchResults = [];
+          this.isSearching = false;
         }
-      }, 200, {leading: true, trailing: true})
+      }, 200, {leading: false, trailing: true})
     };
   },
+  methods: {
+    getAccessToken: function () {
+      return this.$cookie.get('access_token');
+    },
+    getYourselfAuthenticated: function () {
+      this.$router.push({ name: 'Authenticate', params: {authenticateNow: true} });
+    }
+  },
   computed: {
-    accessToken: function () {
-      return this.$cookies.get('access_token');
+  },
+  watch: {
+    searchQuerry: function (newVar, oldVar) {
+      this.searchSpotify(newVar);
     }
   },
   asyncComputed: {
-    searchResults: function () {
-      return this.searchSpotify(this.searchQuerry).then((result) => {
-        return _.get(result, 'tracks.items');
-      });
-    }
   },
   mounted: function () {
-    if (this.accessToken) {
-      this.spotify.setAccessToken(this.accessToken);
+    // No access token!? Go fix that now!
+    if (!this.getAccessToken()) {
+      this.getYourselfAuthenticated();
     }
+    // Verify access token
+
+    this.spotify.setAccessToken(this.getAccessToken());
   }
 };
 </script>

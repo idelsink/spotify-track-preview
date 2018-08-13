@@ -47,6 +47,10 @@ export default {
     }
   },
   mounted: function () {
+    if (_.get(this.$route, 'params.authenticateNow')) {
+      this.startAuthenticationProcess();
+    }
+
     // Parse the redirect URL from spotify
     const redirectedFrom = _.get(this.$route, 'redirectedFrom');
     if (redirectedFrom && _.startsWith(redirectedFrom, '/')) {
