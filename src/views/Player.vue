@@ -2,7 +2,7 @@
   <div>
     <v-toolbar app fixed clipped-left><v-toolbar-title>Spotify track preview</v-toolbar-title></v-toolbar>
       <v-container fluid>
-        <v-content>
+        <v-content v-if="apiAvailable">
           <v-layout align-center justify-center>
             <v-flex xs12 sm6>
               <v-text-field
@@ -43,6 +43,19 @@
             </v-flex>
         </v-layout>
       </v-content>
+      <v-content v-else>
+        <v-container fluid>
+          <v-layout column align-center justify-center row fill-height>
+            <v-flex xs12>
+              <v-progress-circular
+                :size="70"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>
     </v-container>
   </div>
 </template>
@@ -59,6 +72,7 @@ export default {
   data: () => {
     const Spotify = new SpotifyWebApi();
     return {
+      apiAvailable: false,
       searchQuerry: undefined,
       isSearching: false,
       oldSearchRequest: undefined,
@@ -101,9 +115,15 @@ export default {
     if (!this.getAccessToken()) {
       this.getYourselfAuthenticated();
     }
-    // Verify access token
-
     this.spotify.setAccessToken(this.getAccessToken());
+
+    // Verify access to API
+    this.spotify.getMe().then(data => {
+      this.apiAvailable = true;
+      console.log('result from getMe', data);
+    }).catch(err => {
+      console.error('Error while calling the API', err);
+    });
   }
 };
 </script>
