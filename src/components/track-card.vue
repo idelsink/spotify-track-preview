@@ -121,6 +121,7 @@ export default {
       this.eventBus.emit('audio.stop'); // Make sure that all player stop
       if (!this.audioTrackPreview) {
         this.audioTrackPreview = new Audio(this.trackPreviewUrl);
+        this.setVolume(this.volume);
         this.bindTrackPreviewEvents();
       }
       _.set(this.audioTrackPreview, 'currentTime', 0);
