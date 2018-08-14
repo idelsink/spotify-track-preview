@@ -54,7 +54,7 @@
     </v-container>
     <v-footer height="auto" absolute>
       <span class="ml-2">
-        <code>v{{appVersion}}</code>
+        <code>{{appVersion}}</code>
       </span>
       <v-spacer></v-spacer>
       Made with &nbsp;
@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     appVersion: function () {
-      return _.get(this.appInfo, 'gitInfo.semverString', '');
+      return _.get(this.appInfo, 'gitInfo.tag', '');
     }
   },
   watch: {
