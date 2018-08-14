@@ -52,6 +52,28 @@
         </v-container>
       </v-content>
     </v-container>
+    <v-footer height="auto" absolute>
+      <span class="ml-2">
+        <code>v{{appVersion}}</code>
+      </span>
+      <v-spacer></v-spacer>
+      Made with &nbsp;
+      <font-awesome-icon
+        color="#B71C1C"
+        :scale="1"
+        name="heart">
+      </font-awesome-icon>
+      <v-btn flat icon
+        target="_blank"
+        href="https://github.com/idelsink/spotify-track-preview"
+      >
+        <font-awesome-icon
+          color="#ffffff"
+          :scale="1"
+          name="brands/github">
+        </font-awesome-icon>
+      </v-btn>
+    </v-footer>
   </div>
 </template>
 
@@ -61,6 +83,7 @@ import Promise from 'bluebird';
 import SpotifyWebApi from 'spotify-web-api-js';
 import trackCard from '../components/track-card';
 import {EventEmitter2} from 'eventemitter2';
+import AppInfo from '../js/app-info.js';
 
 export default {
   name: 'Player',
@@ -70,6 +93,7 @@ export default {
   data: () => {
     const Spotify = new SpotifyWebApi();
     return {
+      appInfo: AppInfo,
       eventBus: new EventEmitter2({
         wildcard: true,
         maxListeners: 200
@@ -105,6 +129,9 @@ export default {
     }
   },
   computed: {
+    appVersion: function () {
+      return _.get(this.appInfo, 'gitInfo.semverString', '');
+    }
   },
   watch: {
     searchQuerry: function (newVar, oldVar) {
