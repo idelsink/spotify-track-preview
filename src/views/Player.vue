@@ -1,7 +1,7 @@
 <template lang="html">
   <div>
     <v-toolbar app fixed clipped-left><v-toolbar-title>Spotify track preview</v-toolbar-title></v-toolbar>
-    <v-container :grid-list-xs="true" fluid>
+    <v-container fluid>
       <v-content v-if="apiAvailable">
         <v-layout align-center justify-center>
           <v-flex xs12 sm6>
@@ -14,7 +14,7 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
-        <v-container :grid-list-xs="true" fill-height fluid>
+        <v-container :grid-list-sm="true" fluid>
           <v-layout row wrap>
             <v-flex
               v-for="item in searchResults"

@@ -1,13 +1,14 @@
 <template lang="html">
-  <v-card tile class="white--text">
-    <v-layout>
+  <v-card height="100%">
+    <v-layout align-center justify-center fill-height>
       <v-flex xs4>
         <v-layout align-center justify-center fill-height>
           <v-flex>
             <v-card-media
-            :src="albumImage"
-            height="125px"
-            contain
+              @click
+              :src="albumImage"
+              height="125px"
+              contain
             ></v-card-media>
           </v-flex>
         </v-layout>
@@ -15,14 +16,13 @@
       <v-flex xs8>
         <v-card-title primary-title>
           <div>
-            <div class="headline">{{trackName}}</div>
+            <div class="title">{{trackName}}</div>
             <div>{{artistNames}}</div>
             <div>{{albumName}}</div>
           </div>
         </v-card-title>
       </v-flex>
     </v-layout>
-    <v-divider light></v-divider>
   </v-card>
 </template>
 
