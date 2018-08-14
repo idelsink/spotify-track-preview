@@ -14,6 +14,15 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm6>
+            <v-slider
+            v-model="volume"
+            append-icon="volume_up"
+            prepend-icon="volume_down"
+            ></v-slider>
+          </v-flex>
+        </v-layout>
         <v-container :grid-list-sm="true" fluid>
           <v-layout row wrap>
             <v-flex
@@ -22,6 +31,8 @@
             >
               <trackCard
                 :data="item"
+                :eventBus="eventBus"
+                :volume="volume"
               ></trackCard>
             </v-flex>
           </v-layout>
@@ -49,6 +60,7 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import SpotifyWebApi from 'spotify-web-api-js';
 import trackCard from '../components/track-card';
+import {EventEmitter2} from 'eventemitter2';
 
 export default {
   name: 'Player',
@@ -58,6 +70,11 @@ export default {
   data: () => {
     const Spotify = new SpotifyWebApi();
     return {
+      eventBus: new EventEmitter2({
+        wildcard: true,
+        maxListeners: 200
+      }),
+      volume: 40,
       apiAvailable: false,
       searchQuerry: undefined,
       isSearching: false,
@@ -92,6 +109,7 @@ export default {
   watch: {
     searchQuerry: function (newVar, oldVar) {
       this.searchSpotify(newVar);
+      this.eventBus.emit('audio.stop'); // Make sure that all players stop
     }
   },
   asyncComputed: {
