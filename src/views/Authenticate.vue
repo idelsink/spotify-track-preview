@@ -31,7 +31,7 @@ export default {
       const params = {
         'response_type': 'token',
         'client_id': AppInfo.spotify.clientId,
-        'redirect_uri': window.location.origin, // The URI to redirect to after the user grants/denies permission.
+        'redirect_uri': window.location.origin + window.location.pathname, // The URI to redirect to after the user grants/denies permission.
         'state': '', // Cross-Site Request Forgery reduction (https://tools.ietf.org/html/rfc6749#section-10.12)
         'scope': ''
         // 'show_dialog': false // Whether or not to force the user to approve the app again if they’ve already done so.
