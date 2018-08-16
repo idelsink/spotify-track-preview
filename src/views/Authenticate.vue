@@ -4,6 +4,7 @@
         <v-layout align-center>
           <v-flex>
             <h3 class="display-3">Spotify track preview</h3>
+            <div class="subheading">Player to play the Spotify song preview</div>
 
             <v-divider class="my-3"></v-divider>
             <div class="title mb-3">Authenticate this application by clicking the login button below!</div>
