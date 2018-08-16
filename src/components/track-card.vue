@@ -29,17 +29,18 @@
       </v-flex>
       <v-flex xs1>
           <v-btn
+            :disabled="trackPreviewUrl ? false : true"
+            :loading="fabLoading"
             small
             absolute
             dark
             fab
-            color="red darken-3"
+            :color="fabColor"
             right
             @click="clickFab"
           >
-            <v-icon v-if="previewTrackPaused">play_arrow</v-icon>
-            <v-icon v-else>pause</v-icon>
-          </v-btn>
+          <v-icon>{{fabIcon}}</v-icon>
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-card>
@@ -47,6 +48,7 @@
 
 <script>
 import _ from 'lodash';
+import Promise from 'bluebird';
 
 export default {
   name: 'TrackCard',
@@ -68,11 +70,18 @@ export default {
     return {
       audioTrackPreview: undefined,
       previewTrackPaused: true,
+      trackLoading: false,
       trackPlaying: () => {
         this.previewTrackPaused = false;
       },
       trackPaused: () => {
         this.previewTrackPaused = true;
+      },
+      trackLoadingStart: () => {
+        this.trackLoading = true;
+      },
+      trackDoneLoading: () => {
+        this.trackLoading = false;
       }
     };
   },
@@ -89,8 +98,17 @@ export default {
     albumImage: function () {
       return _.get(_.first(_.get(this.data, 'album.images', [])), 'url', '');
     },
+    fabLoading: function () {
+      return this.trackLoading;
+    },
+    fabColor: function () {
+      return this.previewTrackPaused ? 'red darken-3' : 'teal';
+    },
+    fabIcon: function () {
+      return this.previewTrackPaused ? 'play_arrow' : 'pause';
+    },
     trackPreviewUrl: function () {
-      return _.get(this.data, 'preview_url', '');
+      return _.get(this.data, 'preview_url');
     }
   },
   watch: {
@@ -102,10 +120,14 @@ export default {
     bindTrackPreviewEvents: function () {
       _.invoke(this.audioTrackPreview, 'addEventListener', 'playing', this.trackPlaying);
       _.invoke(this.audioTrackPreview, 'addEventListener', 'pause', this.trackPaused);
+      _.invoke(this.audioTrackPreview, 'addEventListener', 'loadstart', this.trackLoadingStart);
+      _.invoke(this.audioTrackPreview, 'addEventListener', 'loadeddata', this.trackDoneLoading);
     },
     unbindTrackPreviewEvents: function () {
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'playing', this.trackPlaying);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'pause', this.trackPaused);
+      _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadstart', this.trackLoadingStart);
+      _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadeddata', this.trackDoneLoading);
     },
     clickFab: function () {
       if (_.get(this.audioTrackPreview, 'paused', true)) {
@@ -125,10 +147,19 @@ export default {
         this.bindTrackPreviewEvents();
       }
       _.set(this.audioTrackPreview, 'currentTime', 0);
-      _.invoke(this.audioTrackPreview, 'play');
+
+      Promise.resolve(_.invoke(this.audioTrackPreview, 'play')).then(result => {
+        // Done loading
+        this.trackDoneLoading();
+        this.previewTrackPaused = false;
+      }).catch((e) => {
+        this.stopTrackPreview();
+      });
     },
     stopTrackPreview: function () {
+      this.trackDoneLoading();
       _.invoke(this.audioTrackPreview, 'pause');
+      this.previewTrackPaused = true;
     }
   },
   mounted: function () {
