@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-card height="100%">
+  <v-card class="flex fill-height">
     <v-layout align-center justify-center fill-height>
       <v-flex xs4>
         <v-layout align-center justify-center fill-height>
