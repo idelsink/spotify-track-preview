@@ -134,14 +134,23 @@ export default {
     }
   },
   watch: {
-    searchQuerry: function (newVar, oldVar) {
-      this.searchSpotify(newVar);
+    volume: function (newVal) {
+      this.$cookie.set('volume', newVal);
+    },
+    searchQuerry: function (newVal, oldVal) {
+      this.searchSpotify(newVal);
       this.eventBus.emit('audio.stop'); // Make sure that all players stop
     }
   },
   asyncComputed: {
   },
   mounted: function () {
+    // Restore volume
+    const volume = _.toNumber(this.$cookie.get('volume'));
+    if (volume && _.inRange(volume, 0, 100)) {
+      this.volume = volume;
+    }
+
     // No access token!? Go fix that now!
     if (!this.getAccessToken()) {
       this.getYourselfAuthenticated();
