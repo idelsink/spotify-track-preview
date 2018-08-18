@@ -11,6 +11,8 @@
               clearable
               label="Search Spotify"
               hint="For example, Tracks or Albums"
+              append-outer-icon="share"
+              @click:append-outer="shareSearchQuery"
               v-model="searchQuerry"
             ></v-text-field>
           </v-flex>
@@ -101,6 +103,20 @@
         </font-awesome-icon>
       </v-btn>
     </v-footer>
+    <v-snackbar
+      :timeout="2000"
+      :color="snackbarColor"
+      v-model="showSnackbar"
+      bottom
+    >
+      {{ snackbarText }}
+      <v-btn
+        flat
+        @click="showSnackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -121,6 +137,9 @@ export default {
     const Spotify = new SpotifyWebApi();
     return {
       appInfo: AppInfo,
+      showSnackbar: false,
+      snackbarColor: '',
+      snackbarText: '',
       eventBus: new EventEmitter2({
         wildcard: true,
         maxListeners: 200
@@ -168,6 +187,24 @@ export default {
     };
   },
   methods: {
+    shareSearchQuery: function () {
+      let shareUrl;
+      if (this.searchQuerry) {
+        shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.searchQuerry);
+      } else {
+        shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path;
+      }
+      this.$copyText(shareUrl).then((e) => {
+        this.snackbarColor = 'success';
+        this.snackbarText = 'Successfully copied link to this search result';
+        this.showSnackbar = true;
+      }, (e) => {
+        this.snackbarColor = 'error';
+        this.snackbarText = 'Failed to copy the search query';
+        this.showSnackbar = true;
+        console.error(e);
+      });
+    },
     getAccessToken: function () {
       return this.$cookie.get('access_token');
     },
