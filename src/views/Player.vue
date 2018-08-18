@@ -26,7 +26,7 @@
           </v-flex>
         </v-layout>
         <!-- Pagination controls -->
-        <v-layout align-center justify-center>
+        <v-layout v-if="searchResultPaginationCount" align-center justify-center>
           <v-flex xs12 sm6>
             <div class="text-xs-center">
               <v-pagination circle
@@ -51,7 +51,7 @@
           </v-flex>
         </v-layout>
         <!-- Pagination controls -->
-        <v-layout align-center justify-center>
+        <v-layout v-if="searchResultPaginationCount" align-center justify-center>
           <v-flex xs12 sm6>
             <div class="text-xs-center">
               <v-pagination circle
