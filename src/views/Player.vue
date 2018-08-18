@@ -137,9 +137,22 @@ export default {
         this.isSearching = true;
         if (query) {
           _.invoke(this.oldSearchRequest, 'abort'); // Abort old request (if it is still active)
-          this.oldSearchRequest = Spotify.search(query, types, options).then(data => {
-            this.searchResult = _.get(data, 'tracks', {});
-            this.isSearching = false;
+          // Spotify URI
+          this.oldSearchRequest = Promise.try(() => {
+            if (_.startsWith(query, 'spotify:track:')) {
+              // assume it's a Spotify track ID
+              return Spotify.getTrack(_.replace(query, 'spotify:track:', '')).then(data => {
+                this.searchResult = _.set({}, 'items', [
+                  data
+                ]);
+                this.isSearching = false;
+              });
+            } else {
+              return Spotify.search(query, types, options).then(data => {
+                this.searchResult = _.get(data, 'tracks', {});
+                this.isSearching = false;
+              });
+            }
           }).catch(err => {
             console.error('Error while calling the API', err);
             if (_.get(err, 'status') === 401) {
@@ -176,9 +189,6 @@ export default {
     searchResults: function () {
       return _.get(this.searchResult, 'items', []);
     },
-    // searchResultOffset: function () {
-    //   return _.get(this.searchResult, 'total', 0);
-    // },
     searchResultPaginationCount: function () {
       const limit = _.get(this.searchResult, 'limit', 0);
       const total = _.get(this.searchResult, 'total', 0);
@@ -196,7 +206,6 @@ export default {
       } else {
         return 1;
       }
-      // return _.get(this.searchResult, 'total', 0);
     }
   },
   watch: {

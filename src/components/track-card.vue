@@ -1,7 +1,7 @@
 <template lang="html">
   <v-card class="flex fill-height">
     <v-layout align-center justify-center fill-height>
-      <v-flex xs4 >
+      <v-flex xs4 sm4>
         <v-layout>
           <v-flex>
             <v-card-media
@@ -13,7 +13,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs7>
+      <v-flex xs6 sm6>
         <v-card-title style="padding: 0px;">
           <div>
             <div class="title">{{trackName}}</div>
@@ -23,7 +23,12 @@
 
         </v-card-title>
       </v-flex>
-      <v-flex xs1>
+      <v-flex xs2 sm2 fill-height>
+        <v-flex class="text-xs-right">
+          <v-btn icon @click="copyTrackUriToClipboard">
+            <v-icon>share</v-icon>
+          </v-btn>
+        </v-flex>
         <v-btn
           :disabled="trackPreviewUrl ? false : true"
           :loading="fabLoading"
@@ -39,6 +44,20 @@
         </v-btn>
       </v-flex>
     </v-layout>
+    <v-snackbar
+      :timeout="2000"
+      :color="snackbarColor"
+      v-model="showSnackbar"
+      bottom
+    >
+      {{ snackbarText }}
+      <v-btn
+        flat
+        @click="showSnackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -67,6 +86,9 @@ export default {
       audioTrackPreview: undefined,
       previewTrackPaused: true,
       trackLoading: false,
+      showSnackbar: false,
+      snackbarColor: '',
+      snackbarText: '',
       trackPlaying: () => {
         this.previewTrackPaused = false;
       },
@@ -93,6 +115,9 @@ export default {
     },
     albumImage: function () {
       return _.get(_.first(_.get(this.data, 'album.images', [])), 'url', '');
+    },
+    trackUri: function () {
+      return _.get(this.data, 'uri', '');
     },
     fabLoading: function () {
       return this.trackLoading;
@@ -124,6 +149,18 @@ export default {
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'pause', this.trackPaused);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadstart', this.trackLoadingStart);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadeddata', this.trackDoneLoading);
+    },
+    copyTrackUriToClipboard: function () {
+      this.$copyText(this.trackUri).then((e) => {
+        this.snackbarColor = 'success';
+        this.snackbarText = 'Successfully copied song URI';
+        this.showSnackbar = true;
+      }, (e) => {
+        this.snackbarColor = 'error';
+        this.snackbarText = 'Failed to copy song URI';
+        this.showSnackbar = true;
+        console.error('Failed to copy song URI', e);
+      });
     },
     clickFab: function () {
       if (_.get(this.audioTrackPreview, 'paused', true)) {

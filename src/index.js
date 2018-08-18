@@ -5,6 +5,7 @@ import VueAwesome from 'vue-awesome';
 import AsyncComputed from 'vue-async-computed';
 import router from './js/router';
 import VueCookie from 'vue-cookie';
+import VueClipboard from 'vue-clipboard2'
 
 require('./css/app.css'); // Styles
 
@@ -14,6 +15,7 @@ Vue.use(Vuetify);
 Vue.use(VueAwesome);
 Vue.use(AsyncComputed);
 Vue.use(VueCookie);
+Vue.use(VueClipboard);
 
 Vue.component('font-awesome-icon', VueAwesome);
 
