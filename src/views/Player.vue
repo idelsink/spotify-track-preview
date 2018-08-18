@@ -181,7 +181,11 @@ export default {
     // },
     searchResultPaginationCount: function () {
       const limit = _.get(this.searchResult, 'limit', 0);
-      const total = _.get(this.searchResult, 'total', 0);
+      let total = _.get(this.searchResult, 'total', 0);
+      // Limit the offet to 10000
+      // https://developer.spotify.com/documentation/web-api/reference/search/search/
+      // Maximum offset (including limit): 10,000.
+      total = total + this.searchResultLimit > 10000 ? 10000 : total;
       if (limit && total) {
         return _.ceil(total / limit);
       } else {
