@@ -172,6 +172,10 @@ export default {
       return this.$cookie.get('access_token');
     },
     getYourselfAuthenticated: function () {
+      // Store query in cookie (temporary)
+      if (this.searchQuerry) {
+        this.$cookie.set('query', this.searchQuerry, {expires: '10s'});
+      }
       this.$router.push({ name: 'Authenticate', params: {authenticateNow: true} });
     },
     searchPaginatedPage: function (page) {
@@ -213,6 +217,17 @@ export default {
     }
   },
   watch: {
+    '$route' (to, from) {
+      const searchQuerry = _.get(to, 'query.q');
+      if (searchQuerry) {
+        this.searchQuerry = searchQuerry;
+        // Remove query from URL
+        this.$router.replace({
+          name: this.$router.currentRoute.name,
+          query: _.omit(this.$router.currentRoute.query, 's')
+        });
+      }
+    },
     volume: function (newVal) {
       this.$cookie.set('volume', newVal);
     },
@@ -228,6 +243,19 @@ export default {
     const volume = _.toNumber(this.$cookie.get('volume'));
     if (volume && _.inRange(volume, 0, 100)) {
       this.volume = volume;
+    }
+    // Fetch query string from Cookie
+    if (this.$cookie.get('query')) {
+      this.searchQuerry = this.$cookie.get('query');
+    }
+    if (_.has(this.$route, 'query.q')) {
+      // Fetch search query from URL
+      this.searchQuerry = _.get(this.$route, 'query.q', '');
+      // Remove query from URL
+      this.$router.replace({
+        name: this.$router.currentRoute.name,
+        query: _.omit(this.$router.currentRoute.query, 'q')
+      });
     }
 
     // No access token!? Go fix that now!

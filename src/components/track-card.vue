@@ -151,7 +151,9 @@ export default {
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadeddata', this.trackDoneLoading);
     },
     copyTrackUriToClipboard: function () {
-      this.$copyText(this.trackUri).then((e) => {
+      const shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.trackUri);
+      console.log('shareUrl', shareUrl);
+      this.$copyText(shareUrl).then((e) => {
         this.snackbarColor = 'success';
         this.snackbarText = 'Successfully copied song URI';
         this.showSnackbar = true;
