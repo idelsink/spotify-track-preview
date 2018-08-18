@@ -1,8 +1,9 @@
 <template lang="html">
   <div>
-    <v-toolbar app fixed clipped-left><v-toolbar-title>Spotify track preview</v-toolbar-title></v-toolbar>
-    <v-container fluid>
+    <v-toolbar app clipped-left><v-toolbar-title>Spotify track preview</v-toolbar-title></v-toolbar>
+    <v-container :grid-list-sm="true" fluid>
       <v-content v-if="apiAvailable">
+        <!-- Search input -->
         <v-layout align-center justify-center>
           <v-flex xs12 sm6>
             <v-text-field
@@ -14,6 +15,7 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
+        <!-- Volume slider -->
         <v-layout align-center justify-center>
           <v-flex xs12 sm6>
             <v-slider
@@ -23,22 +25,46 @@
             ></v-slider>
           </v-flex>
         </v-layout>
-        <v-container :grid-list-sm="true" fluid>
-          <v-layout row wrap>
-            <v-flex
-              v-for="item in searchResults"
-              xs12 sm6 md4 lg4 xl3
-            >
-              <trackCard
-                :data="item"
-                :eventBus="eventBus"
-                :volume="volume"
-              ></trackCard>
-            </v-flex>
-          </v-layout>
-        </v-container>
+        <!-- Pagination controls -->
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm6>
+            <div class="text-xs-center">
+              <v-pagination circle
+              :length="searchResultPaginationCount"
+              :value="searchResultPaginationCurrent"
+              @input="searchPaginatedPage"
+              ></v-pagination>
+            </div>
+          </v-flex>
+        </v-layout>
+        <!-- Results -->
+        <v-layout row wrap>
+          <v-flex
+            v-for="item in searchResults"
+            xs12 sm6 md6 lg4 xl3
+          >
+            <trackCard
+              :data="item"
+              :eventBus="eventBus"
+              :volume="volume"
+            ></trackCard>
+          </v-flex>
+        </v-layout>
+        <!-- Pagination controls -->
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm6>
+            <div class="text-xs-center">
+              <v-pagination circle
+              :length="searchResultPaginationCount"
+              :value="searchResultPaginationCurrent"
+              @input="searchPaginatedPage"
+              ></v-pagination>
+            </div>
+          </v-flex>
+        </v-layout>
       </v-content>
       <v-content v-else>
+        <!-- Loading -->
         <v-container fluid>
           <v-layout column align-center justify-center row fill-height>
             <v-flex xs12 sm6 offset-sm3>
@@ -52,7 +78,8 @@
         </v-container>
       </v-content>
     </v-container>
-    <v-footer height="auto" absolute>
+    <!-- Footer -->
+    <v-footer app height="auto" >
       <span class="ml-2">
         <code>{{appVersion}}</code>
       </span>
@@ -98,23 +125,30 @@ export default {
         wildcard: true,
         maxListeners: 200
       }),
+      searchResultLimit: 20,
       volume: 40,
       apiAvailable: false,
       searchQuerry: undefined,
       isSearching: false,
       oldSearchRequest: undefined,
       spotify: Spotify,
-      searchResults: [],
-      searchSpotify: _.throttle(function (query) {
+      searchResult: {},
+      searchSpotify: _.throttle(function (query, types, options) {
         this.isSearching = true;
         if (query) {
           _.invoke(this.oldSearchRequest, 'abort'); // Abort old request (if it is still active)
-          this.oldSearchRequest = Spotify.search(query, ['track']).then(data => {
-            this.searchResults = _.get(data, 'tracks.items', []);
+          this.oldSearchRequest = Spotify.search(query, types, options).then(data => {
+            this.searchResult = _.get(data, 'tracks', {});
             this.isSearching = false;
+          }).catch(err => {
+            console.error('Error while calling the API', err);
+            if (_.get(err, 'status') === 401) {
+              console.warn('Unauthorized');
+              this.getYourselfAuthenticated();
+            }
           });
         } else {
-          this.searchResults = [];
+          this.searchResult = {};
           this.isSearching = false;
         }
       }, 200, {leading: false, trailing: true})
@@ -126,11 +160,43 @@ export default {
     },
     getYourselfAuthenticated: function () {
       this.$router.push({ name: 'Authenticate', params: {authenticateNow: true} });
+    },
+    searchPaginatedPage: function (page) {
+      if (_.isNumber(page) && _.inRange(page, 1, this.searchResultPaginationCount + 1)) {
+        page--;
+        this.eventBus.emit('audio.stop'); // Make sure that all players stop
+        this.searchSpotify(this.searchQuerry, ['track'], {limit: this.searchResultLimit, offset: page * this.searchResultLimit});
+      }
     }
   },
   computed: {
     appVersion: function () {
       return _.get(this.appInfo, 'gitInfo.tag', '');
+    },
+    searchResults: function () {
+      return _.get(this.searchResult, 'items', []);
+    },
+    // searchResultOffset: function () {
+    //   return _.get(this.searchResult, 'total', 0);
+    // },
+    searchResultPaginationCount: function () {
+      const limit = _.get(this.searchResult, 'limit', 0);
+      const total = _.get(this.searchResult, 'total', 0);
+      if (limit && total) {
+        return _.ceil(total / limit);
+      } else {
+        return 0;
+      }
+    },
+    searchResultPaginationCurrent: function () {
+      const limit = _.get(this.searchResult, 'limit', 0);
+      const offset = _.get(this.searchResult, 'offset', 0);
+      if (limit && offset) {
+        return 1 + _.ceil(offset / limit);
+      } else {
+        return 1;
+      }
+      // return _.get(this.searchResult, 'total', 0);
     }
   },
   watch: {
@@ -138,8 +204,8 @@ export default {
       this.$cookie.set('volume', newVal);
     },
     searchQuerry: function (newVal, oldVal) {
-      this.searchSpotify(newVal);
       this.eventBus.emit('audio.stop'); // Make sure that all players stop
+      this.searchSpotify(newVal, ['track'], {limit: this.searchResultLimit, offset: 0});
     }
   },
   asyncComputed: {

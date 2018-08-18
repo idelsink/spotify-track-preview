@@ -1,24 +1,20 @@
 <template lang="html">
   <v-card class="flex fill-height">
     <v-layout align-center justify-center fill-height>
-      <v-flex xs4>
-        <v-layout align-center justify-center fill-height>
+      <v-flex xs4 >
+        <v-layout>
           <v-flex>
             <v-card-media
-              @click
               :src="albumImage"
               height="125px"
               contain
             >
-            <v-card-text>
-
-            </v-card-text>
           </v-card-media>
           </v-flex>
         </v-layout>
       </v-flex>
       <v-flex xs7>
-        <v-card-title primary-title>
+        <v-card-title style="padding: 0px;">
           <div>
             <div class="title">{{trackName}}</div>
             <div>{{artistNames}}</div>
@@ -28,17 +24,17 @@
         </v-card-title>
       </v-flex>
       <v-flex xs1>
-          <v-btn
-            :disabled="trackPreviewUrl ? false : true"
-            :loading="fabLoading"
-            small
-            absolute
-            dark
-            fab
-            :color="fabColor"
-            right
-            @click="clickFab"
-          >
+        <v-btn
+          :disabled="trackPreviewUrl ? false : true"
+          :loading="fabLoading"
+          style="z-index:1;"
+          small
+          absolute
+          fab
+          right
+          :color="fabColor"
+          @click="clickFab"
+        >
           <v-icon>{{fabIcon}}</v-icon>
         </v-btn>
       </v-flex>
