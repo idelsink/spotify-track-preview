@@ -141,7 +141,10 @@ export default {
     },
     playTrackPreview: function () {
       this.eventBus.emit('audio.stop'); // Make sure that all player stop
-      if (!this.audioTrackPreview) {
+      // Check if audio is already here or needs to be created
+      // When the currentSrc is different, a new audio object needs to be constructed
+      // This is because vue sometimes reuses created components in lists
+      if (!this.audioTrackPreview || this.trackPreviewUrl !== _.get(this.audioTrackPreview, 'currentSrc')) {
         this.audioTrackPreview = new Audio(this.trackPreviewUrl);
         this.setVolume(this.volume);
         this.bindTrackPreviewEvents();
