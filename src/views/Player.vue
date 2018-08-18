@@ -190,9 +190,9 @@ export default {
     shareSearchQuery: function () {
       let shareUrl;
       if (this.searchQuerry) {
-        shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.searchQuerry);
+        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.searchQuerry);
       } else {
-        shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path;
+        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path;
       }
       this.$copyText(shareUrl).then((e) => {
         this.snackbarColor = 'success';

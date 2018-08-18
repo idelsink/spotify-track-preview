@@ -151,7 +151,7 @@ export default {
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadeddata', this.trackDoneLoading);
     },
     copyTrackUriToClipboard: function () {
-      const shareUrl = window.location.origin + '/#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.trackUri);
+      const shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.trackUri);
       console.log('shareUrl', shareUrl);
       this.$copyText(shareUrl).then((e) => {
         this.snackbarColor = 'success';
