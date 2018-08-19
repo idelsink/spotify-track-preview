@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "bluebird": "^3.5.1",
-    "es-http-error": "^1.2.1",
     "eventemitter2": "^5.0.1",
     "spotify-web-api-js": "^0.24.0",
     "vue": "^2.5.16",
