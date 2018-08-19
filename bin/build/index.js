@@ -20,6 +20,9 @@ const defaultOpts = {
       'vueify'
     ],
     [
+      'envify'
+    ],
+    [
       'git-describeify'
     ]
   ],
