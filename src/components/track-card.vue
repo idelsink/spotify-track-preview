@@ -4,12 +4,12 @@
       <v-flex xs4 sm4>
         <v-layout>
           <v-flex>
-            <v-card-media
+            <v-img
               :src="albumImage"
               height="125px"
               contain
             >
-          </v-card-media>
+          </v-img>
           </v-flex>
         </v-layout>
       </v-flex>
