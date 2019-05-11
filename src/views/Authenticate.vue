@@ -1,19 +1,19 @@
 <template lang="html">
-  <VJumbotron>
-      <VContainer fill-height>
-        <VLayout align-center>
-          <VFlex>
-            <h3 class="display-3">Spotify track preview</h3>
-            <div class="subheading">Player to play the Spotify song preview</div>
+  <VResponsive>
+    <VContainer fill-height>
+      <VLayout align-start>
+        <VFlex mt-5>
+          <h3 class="display-3">Spotify track preview</h3>
+          <div class="subheading">Player to play the Spotify song preview</div>
 
-            <VDivider class="my-3"></VDivider>
-            <div class="title mb-3">Authenticate this application by clicking the login button below!</div>
+          <VDivider class="my-3"></VDivider>
+          <div class="title mb-3">Authenticate this application by clicking the login button below!</div>
 
-            <VBtn color="primary" large :loading="loginLoading" @click="startAuthenticationProcess">Login</VBtn>
-          </VFlex>
-        </VLayout>
-      </VContainer>
-    </VJumbotron>
+          <VBtn color="primary" large :loading="loginLoading" @click="startAuthenticationProcess">Login</VBtn>
+        </VFlex>
+      </VLayout>
+    </VContainer>
+  </VResponsive>
 </template>
 
 <script>
