@@ -204,12 +204,12 @@ export default {
       });
     },
     getAccessToken: function () {
-      return this.$cookie.get('access_token');
+      return this.$localStorage.get('access_token');
     },
     getYourselfAuthenticated: function () {
-      // Store query in cookie (temporary)
+      // Store (temporary) query
       if (this.searchQuerry) {
-        this.$cookie.set('query', this.searchQuerry, { expires: '10s' });
+        this.$localStorage.set('query', this.searchQuerry, { expires: '10s' });
       }
       this.$router.push({ name: 'Authenticate', params: { authenticateNow: true } });
     },
@@ -264,7 +264,7 @@ export default {
       }
     },
     volume: function (newVal) {
-      this.$cookie.set('volume', newVal);
+      this.$localStorage.set('volume', newVal);
     },
     searchQuerry: function (newVal, oldVal) {
       this.eventBus.emit('audio.stop'); // Make sure that all players stop
@@ -275,13 +275,13 @@ export default {
   },
   mounted: function () {
     // Restore volume
-    const volume = _.toNumber(this.$cookie.get('volume'));
+    const volume = _.toNumber(this.$localStorage.get('volume'));
     if (volume && _.inRange(volume, 0, 100)) {
       this.volume = volume;
     }
-    // Fetch query string from Cookie
-    if (this.$cookie.get('query')) {
-      this.searchQuerry = this.$cookie.get('query');
+    // Fetch query string
+    if (this.$localStorage.get('query')) {
+      this.searchQuerry = this.$localStorage.get('query');
     }
     if (_.has(this.$route, 'query.q')) {
       // Fetch search query from URL

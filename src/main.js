@@ -2,7 +2,7 @@ import '@babel/polyfill';
 import Vue from 'vue';
 import './plugins/fontawesome';
 import './plugins/vuetify';
-import './plugins/cookie';
+import './plugins/localstorage';
 import App from './App.vue';
 import router from './router';
 

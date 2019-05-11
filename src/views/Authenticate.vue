@@ -73,8 +73,8 @@ export default {
         'token_type'
       ].every(k => k in params) && _.get(params, 'expires_in', 0) > 0) {
         console.log('Got access token successfully');
-        // Store token in cookie
-        this.$cookie.set('access_token', _.get(params, 'access_token'));
+        // Store token in localstorage
+        this.$localStorage.set('access_token', _.get(params, 'access_token'));
         // Redirect to player
         this.$router.push({ name: 'Player' });
       } else {
