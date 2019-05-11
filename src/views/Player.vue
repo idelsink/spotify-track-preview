@@ -42,7 +42,8 @@
         <!-- Results -->
         <VLayout row wrap>
           <VFlex
-            v-for="item in searchResults"
+            v-for="(item, index) in searchResults"
+            :key="index"
             xs12 sm6 md6 lg4 xl3
           >
             <TrackCard
