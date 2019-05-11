@@ -17,15 +17,13 @@ before_script:
 script:
   - npm run build
 
-before_deploy:
-  - rm bundle/.gitignore # Make sure that the bundle will be pushed
-
 deploy:
   provider: pages
   skip_cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: false
   target-branch: gh-pages
+  local_dir: dist
   on:
     branch: master
     tags: true

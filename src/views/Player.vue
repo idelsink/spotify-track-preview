@@ -1,12 +1,12 @@
 <template lang="html">
   <div>
-    <v-toolbar app clipped-left><v-toolbar-title>Spotify track preview</v-toolbar-title></v-toolbar>
-    <v-container :grid-list-sm="true" fluid>
-      <v-content v-if="apiAvailable">
+    <VToolbar app clipped-left><VToolbarTitle>Spotify track preview</VToolbarTitle></VToolbar>
+    <VContainer :grid-list-sm="true" fluid>
+      <VContent v-if="apiAvailable">
         <!-- Search input -->
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm6>
-            <v-text-field
+        <VLayout align-center justify-center>
+          <VFlex xs12 sm6>
+            <VTextField
               :loading="isSearching"
               clearable
               label="Search Spotify"
@@ -14,109 +14,107 @@
               append-outer-icon="share"
               @click:append-outer="shareSearchQuery"
               v-model="searchQuerry"
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
+            ></VTextField>
+          </VFlex>
+        </VLayout>
         <!-- Volume slider -->
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm6>
-            <v-slider
+        <VLayout align-center justify-center>
+          <VFlex xs12 sm6>
+            <VSlider
             v-model="volume"
             append-icon="volume_up"
             prepend-icon="volume_down"
-            ></v-slider>
-          </v-flex>
-        </v-layout>
+            ></VSlider>
+          </VFlex>
+        </VLayout>
         <!-- Pagination controls -->
-        <v-layout v-if="searchResultPaginationCount" align-center justify-center>
-          <v-flex xs12 sm6>
+        <VLayout v-if="searchResultPaginationCount" align-center justify-center>
+          <VFlex xs12 sm6>
             <div class="text-xs-center">
-              <v-pagination circle
+              <VPagination circle
               :length="searchResultPaginationCount"
               :value="searchResultPaginationCurrent"
               @input="searchPaginatedPage"
-              ></v-pagination>
+              ></VPagination>
             </div>
-          </v-flex>
-        </v-layout>
+          </VFlex>
+        </VLayout>
         <!-- Results -->
-        <v-layout row wrap>
-          <v-flex
+        <VLayout row wrap>
+          <VFlex
             v-for="item in searchResults"
             xs12 sm6 md6 lg4 xl3
           >
-            <trackCard
+            <TrackCard
               :data="item"
               :eventBus="eventBus"
               :volume="volume"
-            ></trackCard>
-          </v-flex>
-        </v-layout>
+            ></TrackCard>
+          </VFlex>
+        </VLayout>
         <!-- Pagination controls -->
-        <v-layout v-if="searchResultPaginationCount" align-center justify-center>
-          <v-flex xs12 sm6>
+        <VLayout v-if="searchResultPaginationCount" align-center justify-center>
+          <VFlex xs12 sm6>
             <div class="text-xs-center">
-              <v-pagination circle
+              <VPagination circle
               :length="searchResultPaginationCount"
               :value="searchResultPaginationCurrent"
               @input="searchPaginatedPage"
-              ></v-pagination>
+              ></VPagination>
             </div>
-          </v-flex>
-        </v-layout>
-      </v-content>
-      <v-content v-else>
+          </VFlex>
+        </VLayout>
+      </VContent>
+      <VContent v-else>
         <!-- Loading -->
-        <v-container fluid>
-          <v-layout column align-center justify-center row fill-height>
-            <v-flex xs12 sm6 offset-sm3>
-              <v-progress-circular
+        <VContainer fluid>
+          <VLayout column align-center justify-center row fill-height>
+            <VFlex xs12 sm6 offset-sm3>
+              <VProgressCircular
                 :size="70"
                 color="primary"
                 indeterminate
-              ></v-progress-circular>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-content>
-    </v-container>
+              ></VProgressCircular>
+            </VFlex>
+          </VLayout>
+        </VContainer>
+      </VContent>
+    </VContainer>
     <!-- Footer -->
-    <v-footer app height="auto" >
+    <VFooter app height="auto" >
       <span class="ml-2">
         <code>{{appVersion}}</code>
       </span>
-      <v-spacer></v-spacer>
+      <VSpacer></VSpacer>
       Made with &nbsp;
-      <font-awesome-icon
+      <FontAwesomeIcon
         color="#B71C1C"
-        :scale="1"
-        name="heart">
-      </font-awesome-icon>
-      <v-btn flat icon
+        icon="heart">
+      </FontAwesomeIcon>
+      <VBtn flat icon
         target="_blank"
         href="https://github.com/idelsink/spotify-track-preview"
       >
-        <font-awesome-icon
+        <FontAwesomeIcon
           color="#ffffff"
-          :scale="1"
-          name="brands/github">
-        </font-awesome-icon>
-      </v-btn>
-    </v-footer>
-    <v-snackbar
+          :icon="['fab', 'github']">
+        </FontAwesomeIcon>
+      </VBtn>
+    </VFooter>
+    <VSnackbar
       :timeout="2000"
       :color="snackbarColor"
       v-model="showSnackbar"
       bottom
     >
       {{ snackbarText }}
-      <v-btn
+      <VBtn
         flat
         @click="showSnackbar = false"
       >
         Close
-      </v-btn>
-    </v-snackbar>
+      </VBtn>
+    </VSnackbar>
   </div>
 </template>
 
@@ -124,14 +122,14 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 import SpotifyWebApi from 'spotify-web-api-js';
-import trackCard from '../components/track-card';
-import {EventEmitter2} from 'eventemitter2';
-import AppInfo from '../js/app-info.js';
+import TrackCard from '../components/TrackCard';
+import { EventEmitter2 } from 'eventemitter2';
+import AppInfo from '../app-info';
 
 export default {
   name: 'Player',
   components: {
-    trackCard
+    TrackCard
   },
   data: () => {
     const Spotify = new SpotifyWebApi();
@@ -183,7 +181,7 @@ export default {
           this.searchResult = {};
           this.isSearching = false;
         }
-      }, 200, {leading: false, trailing: true})
+      }, 200, { leading: false, trailing: true })
     };
   },
   methods: {
@@ -211,15 +209,15 @@ export default {
     getYourselfAuthenticated: function () {
       // Store query in cookie (temporary)
       if (this.searchQuerry) {
-        this.$cookie.set('query', this.searchQuerry, {expires: '10s'});
+        this.$cookie.set('query', this.searchQuerry, { expires: '10s' });
       }
-      this.$router.push({ name: 'Authenticate', params: {authenticateNow: true} });
+      this.$router.push({ name: 'Authenticate', params: { authenticateNow: true } });
     },
     searchPaginatedPage: function (page) {
       if (_.isNumber(page) && _.inRange(page, 1, this.searchResultPaginationCount + 1)) {
         page--;
         this.eventBus.emit('audio.stop'); // Make sure that all players stop
-        this.searchSpotify(this.searchQuerry, ['track'], {limit: this.searchResultLimit, offset: page * this.searchResultLimit});
+        this.searchSpotify(this.searchQuerry, ['track'], { limit: this.searchResultLimit, offset: page * this.searchResultLimit });
       }
     }
   },
@@ -270,7 +268,7 @@ export default {
     },
     searchQuerry: function (newVal, oldVal) {
       this.eventBus.emit('audio.stop'); // Make sure that all players stop
-      this.searchSpotify(newVal, ['track'], {limit: this.searchResultLimit, offset: 0});
+      this.searchSpotify(newVal, ['track'], { limit: this.searchResultLimit, offset: 0 });
     }
   },
   asyncComputed: {

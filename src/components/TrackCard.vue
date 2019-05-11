@@ -1,35 +1,35 @@
 <template lang="html">
-  <v-card class="flex fill-height">
-    <v-layout align-center justify-center fill-height>
-      <v-flex xs4 sm4>
-        <v-layout>
-          <v-flex>
-            <v-img
+  <VCard class="flex fill-height">
+    <VLayout align-center justify-center fill-height>
+      <VFlex xs4 sm4>
+        <VLayout>
+          <VFlex>
+            <VImg
               :src="albumImage"
               height="125px"
               contain
             >
-          </v-img>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs6 sm6>
-        <v-card-title style="padding: 0px;">
+          </VImg>
+          </VFlex>
+        </VLayout>
+      </VFlex>
+      <VFlex xs6 sm6>
+        <VCardTitle style="padding: 0px;">
           <div>
             <div class="title">{{trackName}}</div>
             <div>{{artistNames}}</div>
             <div>{{albumName}}</div>
           </div>
 
-        </v-card-title>
-      </v-flex>
-      <v-flex xs2 sm2 fill-height>
-        <v-flex class="text-xs-right">
-          <v-btn icon @click="copyTrackUriToClipboard">
-            <v-icon>share</v-icon>
-          </v-btn>
-        </v-flex>
-        <v-btn
+        </VCardTitle>
+      </VFlex>
+      <VFlex xs2 sm2 fill-height>
+        <VFlex class="text-xs-right">
+          <VBtn icon @click="copyTrackUriToClipboard">
+            <VIcon>share</VIcon>
+          </VBtn>
+        </VFlex>
+        <VBtn
           :disabled="trackPreviewUrl ? false : true"
           :loading="fabLoading"
           style="z-index:1;"
@@ -40,25 +40,25 @@
           :color="fabColor"
           @click="clickFab"
         >
-          <v-icon>{{fabIcon}}</v-icon>
-        </v-btn>
-      </v-flex>
-    </v-layout>
-    <v-snackbar
+          <VIcon>{{fabIcon}}</VIcon>
+        </VBtn>
+      </VFlex>
+    </VLayout>
+    <VSnackbar
       :timeout="2000"
       :color="snackbarColor"
       v-model="showSnackbar"
       bottom
     >
       {{ snackbarText }}
-      <v-btn
+      <VBtn
         flat
         @click="showSnackbar = false"
       >
         Close
-      </v-btn>
-    </v-snackbar>
-  </v-card>
+      </VBtn>
+    </VSnackbar>
+  </VCard>
 </template>
 
 <script>
@@ -70,7 +70,9 @@ export default {
   props: {
     data: {
       type: Object,
-      default: {}
+      default () {
+        return {};
+      }
     },
     volume: {
       type: Number,

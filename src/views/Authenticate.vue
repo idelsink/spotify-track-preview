@@ -1,24 +1,24 @@
 <template lang="html">
-  <v-jumbotron>
-      <v-container fill-height>
-        <v-layout align-center>
-          <v-flex>
+  <VJumbotron>
+      <VContainer fill-height>
+        <VLayout align-center>
+          <VFlex>
             <h3 class="display-3">Spotify track preview</h3>
             <div class="subheading">Player to play the Spotify song preview</div>
 
-            <v-divider class="my-3"></v-divider>
+            <VDivider class="my-3"></VDivider>
             <div class="title mb-3">Authenticate this application by clicking the login button below!</div>
 
-            <v-btn color="primary" large :loading="loginLoading" @click="startAuthenticationProcess">Login</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-jumbotron>
+            <VBtn color="primary" large :loading="loginLoading" @click="startAuthenticationProcess">Login</VBtn>
+          </VFlex>
+        </VLayout>
+      </VContainer>
+    </VJumbotron>
 </template>
 
 <script>
 import _ from 'lodash';
-import AppInfo from '../js/app-info';
+import AppInfo from '../app-info';
 
 export default {
   name: 'Authenticate',
