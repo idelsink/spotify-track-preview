@@ -3,6 +3,7 @@ import Vue from 'vue';
 import './plugins/fontawesome';
 import './plugins/vuetify';
 import './plugins/localstorage';
+import './plugins/clipboard2';
 import App from './App.vue';
 import router from './router';
 
