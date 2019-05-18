@@ -5,7 +5,7 @@
       <VContent v-if="apiAvailable">
         <!-- Search input -->
         <VLayout align-center justify-center>
-          <VFlex xs12 sm6>
+          <VFlex xs12 sm10 md8 lg6>
             <VTextField
               :loading="isSearching"
               clearable
@@ -19,7 +19,7 @@
         </VLayout>
         <!-- Volume slider -->
         <VLayout align-center justify-center>
-          <VFlex xs12 sm6>
+          <VFlex xs12 sm10 md8 lg6>
             <VSlider
             v-model="volume"
             append-icon="volume_up"
@@ -29,7 +29,7 @@
         </VLayout>
         <!-- Pagination controls -->
         <VLayout v-if="searchResultPaginationCount" align-center justify-center>
-          <VFlex xs12 sm6>
+          <VFlex xs12 sm10 md8 lg6>
             <div class="text-xs-center">
               <VPagination circle
               :length="searchResultPaginationCount"
@@ -55,7 +55,7 @@
         </VLayout>
         <!-- Pagination controls -->
         <VLayout v-if="searchResultPaginationCount" align-center justify-center>
-          <VFlex xs12 sm6>
+          <VFlex xs12 sm10 md8 lg6>
             <div class="text-xs-center">
               <VPagination circle
               :length="searchResultPaginationCount"
