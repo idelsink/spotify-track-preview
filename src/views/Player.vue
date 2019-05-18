@@ -283,6 +283,7 @@ export default {
     // Fetch query string
     if (this.$localStorage.get('query')) {
       this.searchQuerry = this.$localStorage.get('query');
+      this.$localStorage.remove('query');
     }
     if (_.has(this.$route, 'query.q')) {
       // Fetch search query from URL
