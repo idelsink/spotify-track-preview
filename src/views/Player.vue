@@ -92,15 +92,7 @@
         color="#B71C1C"
         icon="heart">
       </FontAwesomeIcon>
-      <VBtn flat icon
-        target="_blank"
-        href="https://github.com/idelsink/spotify-track-preview"
-      >
-        <FontAwesomeIcon
-          color="#ffffff"
-          :icon="['fab', 'github']">
-        </FontAwesomeIcon>
-      </VBtn>
+      <GithubBtn></GithubBtn>
     </VFooter>
     <VSnackbar
       :timeout="2000"
@@ -126,11 +118,13 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import TrackCard from '../components/TrackCard';
 import { EventEmitter2 } from 'eventemitter2';
 import AppInfo from '../app-info';
+import GithubBtn from '../components/GithubBtn';
 
 export default {
   name: 'Player',
   components: {
-    TrackCard
+    TrackCard,
+    GithubBtn
   },
   data: () => {
     const Spotify = new SpotifyWebApi();
