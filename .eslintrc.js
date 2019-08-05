@@ -7,6 +7,7 @@ module.exports = {
     'GIT_DESCRIBE': true
   },
   extends: [
+    'vuetify',
     'plugin:vue/essential',
     '@vue/standard',
     'semistandard'
@@ -17,7 +18,8 @@ module.exports = {
     'vue/component-name-in-template-casing': ['error', 'PascalCase' | 'kebab-case', {
       'registeredComponentsOnly': false,
       'ignores': []
-    }]
+    }],
+    'vue/script-indent': ['error', 2, { 'baseIndent': 0 }]
   },
   parserOptions: {
     parser: 'babel-eslint'
