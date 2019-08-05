@@ -1,31 +1,48 @@
 <template lang="html">
   <VCard class="flex fill-height">
-    <VLayout align-center justify-center fill-height>
-      <VFlex xs4 sm4>
+    <VLayout
+      align-center
+      justify-center
+      fill-height
+    >
+      <VFlex
+        xs4
+        sm4
+      >
         <VLayout>
           <VFlex>
             <VImg
               :src="albumImage"
               height="125px"
               contain
-            >
-          </VImg>
+            />
           </VFlex>
         </VLayout>
       </VFlex>
-      <VFlex xs6 sm6>
+      <VFlex
+        xs6
+        sm6
+      >
         <VCardTitle style="padding: 0px;">
           <div>
-            <div class="title">{{trackName}}</div>
-            <div>{{artistNames}}</div>
-            <div>{{albumName}}</div>
+            <div class="title">
+              {{ trackName }}
+            </div>
+            <div>{{ artistNames }}</div>
+            <div>{{ albumName }}</div>
           </div>
-
         </VCardTitle>
       </VFlex>
-      <VFlex xs2 sm2 fill-height>
+      <VFlex
+        xs2
+        sm2
+        fill-height
+      >
         <VFlex class="text-xs-right">
-          <VBtn icon @click="copyTrackUriToClipboard">
+          <VBtn
+            icon
+            @click="copyTrackUriToClipboard"
+          >
             <VIcon>share</VIcon>
           </VBtn>
         </VFlex>
@@ -40,14 +57,14 @@
           :color="fabColor"
           @click="clickFab"
         >
-          <VIcon>{{fabIcon}}</VIcon>
+          <VIcon>{{ fabIcon }}</VIcon>
         </VBtn>
       </VFlex>
     </VLayout>
     <VSnackbar
+      v-model="showSnackbar"
       :timeout="2000"
       :color="snackbarColor"
-      v-model="showSnackbar"
       bottom
     >
       {{ snackbarText }}
@@ -83,7 +100,7 @@ export default {
       required: true
     }
   },
-  data: function () {
+  data () {
     return {
       audioTrackPreview: undefined,
       previewTrackPaused: true,
@@ -106,31 +123,31 @@ export default {
     };
   },
   computed: {
-    trackName: function () {
+    trackName () {
       return _.get(this.data, 'name', '');
     },
-    artistNames: function () {
+    artistNames () {
       return _.map(_.get(this.data, 'artists', []), artist => _.get(artist, 'name', '')).join(', ');
     },
-    albumName: function () {
+    albumName () {
       return _.get(this.data, 'album.name', '');
     },
-    albumImage: function () {
+    albumImage () {
       return _.get(_.first(_.get(this.data, 'album.images', [])), 'url', '');
     },
-    trackUri: function () {
+    trackUri () {
       return _.get(this.data, 'uri', '');
     },
-    fabLoading: function () {
+    fabLoading () {
       return this.trackLoading;
     },
-    fabColor: function () {
+    fabColor () {
       return this.previewTrackPaused ? 'red darken-3' : 'teal';
     },
-    fabIcon: function () {
+    fabIcon () {
       return this.previewTrackPaused ? 'play_arrow' : 'pause';
     },
-    trackPreviewUrl: function () {
+    trackPreviewUrl () {
       return _.get(this.data, 'preview_url');
     }
   },
@@ -139,20 +156,30 @@ export default {
       this.setVolume(newVal);
     }
   },
+  mounted () {
+    this.setVolume(this.volume);
+
+    this.eventBus.on('audio.stop', () => {
+      this.stopTrackPreview();
+    });
+  },
+  beforeDestroy () {
+    this.unbindTrackPreviewEvents();
+  },
   methods: {
-    bindTrackPreviewEvents: function () {
+    bindTrackPreviewEvents () {
       _.invoke(this.audioTrackPreview, 'addEventListener', 'playing', this.trackPlaying);
       _.invoke(this.audioTrackPreview, 'addEventListener', 'pause', this.trackPaused);
       _.invoke(this.audioTrackPreview, 'addEventListener', 'loadstart', this.trackLoadingStart);
       _.invoke(this.audioTrackPreview, 'addEventListener', 'loadeddata', this.trackDoneLoading);
     },
-    unbindTrackPreviewEvents: function () {
+    unbindTrackPreviewEvents () {
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'playing', this.trackPlaying);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'pause', this.trackPaused);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadstart', this.trackLoadingStart);
       _.invoke(this.audioTrackPreview, 'removeEventListener', 'loadeddata', this.trackDoneLoading);
     },
-    copyTrackUriToClipboard: function () {
+    copyTrackUriToClipboard () {
       const shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.trackUri);
       console.log('shareUrl', shareUrl);
       this.$copyText(shareUrl).then((e) => {
@@ -166,7 +193,7 @@ export default {
         console.error('Failed to copy song URI', e);
       });
     },
-    clickFab: function () {
+    clickFab () {
       if (_.get(this.audioTrackPreview, 'paused', true)) {
         this.playTrackPreview();
       } else {
@@ -176,7 +203,7 @@ export default {
     setVolume: function (value) {
       _.set(this.audioTrackPreview, 'volume', value / 100);
     },
-    playTrackPreview: function () {
+    playTrackPreview () {
       this.eventBus.emit('audio.stop'); // Make sure that all player stop
       // Check if audio is already here or needs to be created
       // When the currentSrc is different, a new audio object needs to be constructed
@@ -196,21 +223,11 @@ export default {
         this.stopTrackPreview();
       });
     },
-    stopTrackPreview: function () {
+    stopTrackPreview () {
       this.trackDoneLoading();
       _.invoke(this.audioTrackPreview, 'pause');
       this.previewTrackPaused = true;
     }
-  },
-  mounted: function () {
-    this.setVolume(this.volume);
-
-    this.eventBus.on('audio.stop', () => {
-      this.stopTrackPreview();
-    });
-  },
-  beforeDestroy: function () {
-    this.unbindTrackPreviewEvents();
   }
 };
 </script>

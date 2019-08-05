@@ -1,15 +1,34 @@
 <template lang="html">
   <VResponsive>
     <VContainer fill-height>
-      <VLayout align-start>
-        <VFlex mt-5>
-          <h3 class="display-3">Spotify track preview</h3>
-          <div class="subheading">Player to play the Spotify song preview</div>
+      <VLayout
+        justify-center
+      >
+        <VFlex
+          xs12
+          sm10
+          mt-12
+        >
+          <h3 class="display-2 font-weight-medium">
+            Spotify track preview
+          </h3>
+          <div class="mt-2 subtitle-1">
+            Player to play the Spotify song preview
+          </div>
 
-          <VDivider class="my-3"></VDivider>
-          <div class="title mb-3">Authenticate this application by clicking the login button below!</div>
+          <VDivider class="my-3" />
+          <h6 class="title mb-3">
+            Authenticate this application by clicking the login button below!
+          </h6>
 
-          <VBtn color="primary" large :loading="loginLoading" @click="startAuthenticationProcess">Login</VBtn>
+          <VBtn
+            color="primary"
+            large
+            :loading="loginLoading"
+            @click="startAuthenticationProcess"
+          >
+            Login
+          </VBtn>
         </VFlex>
       </VLayout>
     </VContainer>
@@ -26,28 +45,7 @@ export default {
     loginLoading: false,
     gradient: 'to top right, rgba(63,81,181, .7), rgba(25,32,72, .7)'
   }),
-  methods: {
-    startAuthenticationProcess: function () {
-      const base = 'https://accounts.spotify.com/authorize';
-      const params = {
-        'response_type': 'token',
-        'client_id': AppInfo.spotify.clientId,
-        'redirect_uri': window.location.origin + window.location.pathname, // The URI to redirect to after the user grants/denies permission.
-        'state': '', // Cross-Site Request Forgery reduction (https://tools.ietf.org/html/rfc6749#section-10.12)
-        'scope': ''
-        // 'show_dialog': false // Whether or not to force the user to approve the app again if they’ve already done so.
-      };
-      const query = Object.keys(params)
-        .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
-        .join('&');
-
-      console.log(`params`, params);
-      console.log(`URL: ${base}?${query}`);
-
-      window.location.assign(`${base}?${query}`);
-    }
-  },
-  mounted: function () {
+  mounted () {
     if (_.get(this.$route, 'params.authenticateNow')) {
       this.startAuthenticationProcess();
     }
@@ -81,6 +79,27 @@ export default {
         console.warn('The redirectedFrom key did not meet the required criteria', params);
       }
       this.loginLoading = false;
+    }
+  },
+  methods: {
+    startAuthenticationProcess () {
+      const base = 'https://accounts.spotify.com/authorize';
+      const params = {
+        'response_type': 'token',
+        'client_id': AppInfo.spotify.clientId,
+        'redirect_uri': window.location.origin + window.location.pathname, // The URI to redirect to after the user grants/denies permission.
+        'state': '', // Cross-Site Request Forgery reduction (https://tools.ietf.org/html/rfc6749#section-10.12)
+        'scope': ''
+        // 'show_dialog': false // Whether or not to force the user to approve the app again if they’ve already done so.
+      };
+      const query = Object.keys(params)
+        .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+        .join('&');
+
+      console.log(`params`, params);
+      console.log(`URL: ${base}?${query}`);
+
+      window.location.assign(`${base}?${query}`);
     }
   }
 };

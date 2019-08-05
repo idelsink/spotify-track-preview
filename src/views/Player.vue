@@ -1,67 +1,115 @@
 <template lang="html">
   <div>
-    <VAppBar clipped-left><VToolbarTitle>Spotify track preview</VToolbarTitle></VAppBar>
-    <VContainer :grid-list-sm="true" fluid>
+    <VAppBar clipped-left>
+      <VToolbarTitle>Spotify track preview</VToolbarTitle>
+    </VAppBar>
+    <VContainer
+      :grid-list-sm="true"
+      fluid
+    >
       <VContent v-if="apiAvailable">
         <!-- Search input -->
-        <VLayout align-center justify-center>
-          <VFlex xs12 sm10 md8 lg6>
+        <VLayout
+          align-center
+          justify-center
+        >
+          <VFlex
+            xs12
+            sm10
+            md8
+            lg6
+          >
             <VTextField
+              v-model="searchQuerry"
               :loading="isSearching"
               clearable
               label="Search Spotify"
               hint="For example, Tracks or Albums"
               append-outer-icon="share"
               @click:append-outer="shareSearchQuery"
-              v-model="searchQuerry"
-            ></VTextField>
+            />
           </VFlex>
         </VLayout>
         <!-- Volume slider -->
-        <VLayout align-center justify-center>
-          <VFlex xs12 sm10 md8 lg6>
+        <VLayout
+          align-center
+          justify-center
+        >
+          <VFlex
+            xs12
+            sm10
+            md8
+            lg6
+          >
             <VSlider
-            v-model="volume"
-            append-icon="volume_up"
-            prepend-icon="volume_down"
-            ></VSlider>
+              v-model="volume"
+              append-icon="volume_up"
+              prepend-icon="volume_down"
+            />
           </VFlex>
         </VLayout>
         <!-- Pagination controls -->
-        <VLayout v-if="searchResultPaginationCount" align-center justify-center>
-          <VFlex xs12 sm10 md8 lg6>
+        <VLayout
+          v-if="searchResultPaginationCount"
+          align-center
+          justify-center
+        >
+          <VFlex
+            xs12
+            sm10
+            md8
+            lg6
+          >
             <div class="text-xs-center">
-              <VPagination circle
-              :length="searchResultPaginationCount"
-              :value="searchResultPaginationCurrent"
-              @input="searchPaginatedPage"
-              ></VPagination>
+              <VPagination
+                circle
+                :length="searchResultPaginationCount"
+                :value="searchResultPaginationCurrent"
+                @input="searchPaginatedPage"
+              />
             </div>
           </VFlex>
         </VLayout>
         <!-- Results -->
-        <VLayout row wrap>
+        <VLayout
+          row
+          wrap
+        >
           <VFlex
             v-for="(item, index) in searchResults"
             :key="index"
-            xs12 sm6 md6 lg4 xl3
+            xs12
+            sm6
+            md6
+            lg4
+            xl3
           >
             <TrackCard
               :data="item"
-              :eventBus="eventBus"
+              :event-bus="eventBus"
               :volume="volume"
-            ></TrackCard>
+            />
           </VFlex>
         </VLayout>
         <!-- Pagination controls -->
-        <VLayout v-if="searchResultPaginationCount" align-center justify-center>
-          <VFlex xs12 sm10 md8 lg6>
+        <VLayout
+          v-if="searchResultPaginationCount"
+          align-center
+          justify-center
+        >
+          <VFlex
+            xs12
+            sm10
+            md8
+            lg6
+          >
             <div class="text-xs-center">
-              <VPagination circle
-              :length="searchResultPaginationCount"
-              :value="searchResultPaginationCurrent"
-              @input="searchPaginatedPage"
-              ></VPagination>
+              <VPagination
+                circle
+                :length="searchResultPaginationCount"
+                :value="searchResultPaginationCurrent"
+                @input="searchPaginatedPage"
+              />
             </div>
           </VFlex>
         </VLayout>
@@ -69,35 +117,48 @@
       <VContent v-else>
         <!-- Loading -->
         <VContainer fluid>
-          <VLayout column align-center justify-center row fill-height>
-            <VFlex xs12 sm6 offset-sm3>
+          <VLayout
+            column
+            align-center
+            justify-center
+            row
+            fill-height
+          >
+            <VFlex
+              xs12
+              sm6
+              offset-sm3
+            >
               <VProgressCircular
                 :size="70"
                 color="primary"
                 indeterminate
-              ></VProgressCircular>
+              />
             </VFlex>
           </VLayout>
         </VContainer>
       </VContent>
     </VContainer>
     <!-- Footer -->
-    <VFooter app height="auto" >
+    <VFooter
+      app
+      height="auto"
+    >
       <span class="ml-2">
-        <code>{{appVersion}}</code>
+        <code>{{ appVersion }}</code>
       </span>
-      <VSpacer></VSpacer>
+      <VSpacer />
       Made with &nbsp;
       <FontAwesomeIcon
         color="#B71C1C"
-        icon="heart">
-      </FontAwesomeIcon>
-      <GithubBtn></GithubBtn>
+        icon="heart"
+      />
+      <GithubBtn />
     </VFooter>
     <VSnackbar
+      v-model="showSnackbar"
       :timeout="2000"
       :color="snackbarColor"
-      v-model="showSnackbar"
       bottom
     >
       {{ snackbarText }}
@@ -179,51 +240,14 @@ export default {
       }, 200, { leading: false, trailing: true })
     };
   },
-  methods: {
-    shareSearchQuery: function () {
-      let shareUrl;
-      if (this.searchQuerry) {
-        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.searchQuerry);
-      } else {
-        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path;
-      }
-      this.$copyText(shareUrl).then((e) => {
-        this.snackbarColor = 'success';
-        this.snackbarText = 'Successfully copied link to this search result';
-        this.showSnackbar = true;
-      }, (e) => {
-        this.snackbarColor = 'error';
-        this.snackbarText = 'Failed to copy the search query';
-        this.showSnackbar = true;
-        console.error(e);
-      });
-    },
-    getAccessToken: function () {
-      return this.$localStorage.get('access_token');
-    },
-    getYourselfAuthenticated: function () {
-      // Store (temporary) query
-      if (this.searchQuerry) {
-        this.$localStorage.set('query', this.searchQuerry, { expires: '10s' });
-      }
-      this.$router.push({ name: 'Authenticate', params: { authenticateNow: true } });
-    },
-    searchPaginatedPage: function (page) {
-      if (_.isNumber(page) && _.inRange(page, 1, this.searchResultPaginationCount + 1)) {
-        page--;
-        this.eventBus.emit('audio.stop'); // Make sure that all players stop
-        this.searchSpotify(this.searchQuerry, ['track'], { limit: this.searchResultLimit, offset: page * this.searchResultLimit });
-      }
-    }
-  },
   computed: {
-    appVersion: function () {
+    appVersion () {
       return _.get(this.appInfo, 'gitInfo.tag', '');
     },
-    searchResults: function () {
+    searchResults () {
       return _.get(this.searchResult, 'items', []);
     },
-    searchResultPaginationCount: function () {
+    searchResultPaginationCount () {
       const limit = _.get(this.searchResult, 'limit', 0);
       let total = _.get(this.searchResult, 'total', 0);
       // Limit the offet to 10000
@@ -236,7 +260,7 @@ export default {
         return 0;
       }
     },
-    searchResultPaginationCurrent: function () {
+    searchResultPaginationCurrent () {
       const limit = _.get(this.searchResult, 'limit', 0);
       const offset = _.get(this.searchResult, 'offset', 0);
       if (limit && offset) {
@@ -266,9 +290,7 @@ export default {
       this.searchSpotify(newVal, ['track'], { limit: this.searchResultLimit, offset: 0 });
     }
   },
-  asyncComputed: {
-  },
-  mounted: function () {
+  mounted () {
     // Restore volume
     const volume = _.toNumber(this.$localStorage.get('volume'));
     if (volume && _.inRange(volume, 0, 100)) {
@@ -306,6 +328,45 @@ export default {
         this.getYourselfAuthenticated();
       }
     });
+  },
+  methods: {
+    shareSearchQuery () {
+      let shareUrl;
+      if (this.searchQuerry) {
+        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path + '?q=' + encodeURIComponent(this.searchQuerry);
+      } else {
+        shareUrl = window.location.origin + window.location.pathname + '#' + this.$router.currentRoute.path;
+      }
+      this.$copyText(shareUrl).then((e) => {
+        this.snackbarColor = 'success';
+        this.snackbarText = 'Successfully copied link to this search result';
+        this.showSnackbar = true;
+      }, (e) => {
+        this.snackbarColor = 'error';
+        this.snackbarText = 'Failed to copy the search query';
+        this.showSnackbar = true;
+        console.error(e);
+      });
+    },
+    getAccessToken () {
+      return this.$localStorage.get('access_token');
+    },
+    getYourselfAuthenticated () {
+      // Store (temporary) query
+      if (this.searchQuerry) {
+        this.$localStorage.set('query', this.searchQuerry, { expires: '10s' });
+      }
+      this.$router.push({ name: 'Authenticate', params: { authenticateNow: true } });
+    },
+    searchPaginatedPage: function (page) {
+      if (_.isNumber(page) && _.inRange(page, 1, this.searchResultPaginationCount + 1)) {
+        page--;
+        this.eventBus.emit('audio.stop'); // Make sure that all players stop
+        this.searchSpotify(this.searchQuerry, ['track'], { limit: this.searchResultLimit, offset: page * this.searchResultLimit });
+      }
+    }
+  },
+  asyncComputed: {
   }
 };
 </script>

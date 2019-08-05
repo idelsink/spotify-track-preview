@@ -1,6 +1,6 @@
 <template lang="html">
   <VApp>
-    <RouterView></RouterView>
+    <RouterView />
   </VApp>
 </template>
 
@@ -12,7 +12,7 @@ export default {
   },
   computed: {
   },
-  mounted: function () {
+  mounted () {
   }
 };
 </script>
