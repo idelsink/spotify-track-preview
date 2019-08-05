@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <VToolbar app clipped-left><VToolbarTitle>Spotify track preview</VToolbarTitle></VToolbar>
+    <VAppBar clipped-left><VToolbarTitle>Spotify track preview</VToolbarTitle></VAppBar>
     <VContainer :grid-list-sm="true" fluid>
       <VContent v-if="apiAvailable">
         <!-- Search input -->
@@ -102,7 +102,7 @@
     >
       {{ snackbarText }}
       <VBtn
-        flat
+        text
         @click="showSnackbar = false"
       >
         Close

@@ -52,7 +52,7 @@
     >
       {{ snackbarText }}
       <VBtn
-        flat
+        text
         @click="showSnackbar = false"
       >
         Close
