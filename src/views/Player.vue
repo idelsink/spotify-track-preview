@@ -225,8 +225,10 @@ export default {
             }
           });
         } else {
-          this.searchResult = {};
-          this.isSearching = false;
+          return Spotify.getMyTopTracks(options).then(data => {
+            this.searchResult = data;
+            this.isSearching = false;
+          });
         }
       }, 200, { leading: false, trailing: true })
     };
@@ -291,8 +293,7 @@ export default {
     if (this.$localStorage.get('query')) {
       this.searchQuerry = this.$localStorage.get('query');
       this.$localStorage.remove('query');
-    }
-    if (_.has(this.$route, 'query.q')) {
+    } else if (_.has(this.$route, 'query.q')) {
       // Fetch search query from URL
       this.searchQuerry = _.get(this.$route, 'query.q', '');
       // Remove query from URL
@@ -300,6 +301,8 @@ export default {
         name: this.$router.currentRoute.name,
         query: _.omit(this.$router.currentRoute.query, 'q')
       });
+    } else {
+      this.searchQuerry = ''; // Trigger empty search to load users top tracks
     }
 
     // No access token!? Go fix that now!

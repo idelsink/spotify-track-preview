@@ -89,7 +89,9 @@ export default {
         'client_id': AppInfo.spotify.clientId,
         'redirect_uri': window.location.origin + window.location.pathname, // The URI to redirect to after the user grants/denies permission.
         'state': '', // Cross-Site Request Forgery reduction (https://tools.ietf.org/html/rfc6749#section-10.12)
-        'scope': ''
+        'scope': [
+          'user-top-read' // Read access to a user's top artists and tracks.
+        ]
         // 'show_dialog': false // Whether or not to force the user to approve the app again if they’ve already done so.
       };
       const query = Object.keys(params)
