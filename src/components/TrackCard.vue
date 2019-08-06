@@ -1,66 +1,82 @@
 <template lang="html">
-  <VCard class="flex fill-height">
-    <VLayout
-      align-center
-      justify-center
-      fill-height
-    >
-      <VFlex
-        xs4
-        sm4
+  <VCard>
+    <VHover v-slot:default="{ hover }">
+      <VImg
+        :class="{pointer: hasTrackPreviewUrl}"
+        :src="albumImage"
+        aspect-ratio="1"
+        @click="clickFab"
       >
-        <VLayout>
-          <VFlex>
-            <VImg
-              :src="albumImage"
-              height="125px"
-              contain
-            />
-          </VFlex>
-        </VLayout>
-      </VFlex>
-      <VFlex
-        xs6
-        sm6
-      >
-        <VCardTitle style="padding: 0px;">
-          <div>
-            <div class="title">
-              {{ trackName }}
-            </div>
-            <div>{{ artistNames }}</div>
-            <div>{{ albumName }}</div>
-          </div>
-        </VCardTitle>
-      </VFlex>
-      <VFlex
-        xs2
-        sm2
-        fill-height
-      >
-        <VFlex class="text-xs-right">
-          <VBtn
-            icon
-            @click="copyTrackUriToClipboard"
-          >
-            <VIcon>share</VIcon>
-          </VBtn>
-        </VFlex>
-        <VBtn
-          :disabled="trackPreviewUrl ? false : true"
-          :loading="fabLoading"
-          style="z-index:1;"
-          small
-          absolute
-          fab
-          right
-          :color="fabColor"
-          @click="clickFab"
+        <VLayout
+          align-center
+          justify-center
+          row
+          fill-height
         >
-          <VIcon>{{ fabIcon }}</VIcon>
-        </VBtn>
-      </VFlex>
-    </VLayout>
+          <VChip
+            v-if="!hasTrackPreviewUrl"
+            disabled
+            small
+          >
+            Preview not available
+          </VChip>
+          <VBtn
+            v-else
+            v-show="hover || isTrackLoading || isTrackPlaying"
+            :disabled="!hasTrackPreviewUrl"
+            :loading="isTrackLoading"
+            large
+            fab
+            :color="fabColor"
+          >
+            <VIcon>{{ fabIcon }}</VIcon>
+          </VBtn>
+        </VLayout>
+      </VImg>
+    </VHover>
+
+    <VCardText>
+      <div class="title">
+        {{ trackName }}
+      </div>
+      <div class="subtitle-2">
+        {{ artistNames }}
+      </div>
+      <div class="subtitle-2 font-weight-light">
+        <VIcon
+          small
+        >
+          fas fa-compact-disc
+        </VIcon>
+        {{ albumName }}
+      </div>
+    </VCardText>
+
+    <VCardActions>
+      <VBtn
+        small
+        text
+        @click="copyTrackUriToClipboard"
+      >
+        Share
+      </VBtn>
+      <VSpacer />
+      <!-- <VBtn
+        small
+        icon
+        @click="show = !show"
+      >
+        <VIcon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</VIcon>
+      </VBtn> -->
+    </VCardActions>
+
+    <!-- <VExpandTransition>
+      <div v-show="show">
+        <VCardText>
+        </VCardText>
+      </div>
+    </VExpandTransition> -->
+
     <VSnackbar
       v-model="showSnackbar"
       :timeout="2000"
@@ -102,54 +118,32 @@ export default {
   },
   data () {
     return {
+      show: false,
+      overlay: false,
       audioTrackPreview: undefined,
       previewTrackPaused: true,
       trackLoading: false,
       showSnackbar: false,
       snackbarColor: '',
       snackbarText: '',
-      trackPlaying: () => {
-        this.previewTrackPaused = false;
-      },
-      trackPaused: () => {
-        this.previewTrackPaused = true;
-      },
-      trackLoadingStart: () => {
-        this.trackLoading = true;
-      },
-      trackDoneLoading: () => {
-        this.trackLoading = false;
-      }
+      trackPlaying: () => { this.previewTrackPaused = false; },
+      trackPaused: () => { this.previewTrackPaused = true; },
+      trackLoadingStart: () => { this.trackLoading = true; },
+      trackDoneLoading: () => { this.trackLoading = false; }
     };
   },
   computed: {
-    trackName () {
-      return _.get(this.data, 'name', '');
-    },
-    artistNames () {
-      return _.map(_.get(this.data, 'artists', []), artist => _.get(artist, 'name', '')).join(', ');
-    },
-    albumName () {
-      return _.get(this.data, 'album.name', '');
-    },
-    albumImage () {
-      return _.get(_.first(_.get(this.data, 'album.images', [])), 'url', '');
-    },
-    trackUri () {
-      return _.get(this.data, 'uri', '');
-    },
-    fabLoading () {
-      return this.trackLoading;
-    },
-    fabColor () {
-      return this.previewTrackPaused ? 'red darken-3' : 'teal';
-    },
-    fabIcon () {
-      return this.previewTrackPaused ? 'play_arrow' : 'pause';
-    },
-    trackPreviewUrl () {
-      return _.get(this.data, 'preview_url');
-    }
+    trackName () { return _.get(this.data, 'name', ''); },
+    artistNames () { return _.map(_.get(this.data, 'artists', []), artist => _.get(artist, 'name', '')).join(', '); },
+    albumName () { return _.get(this.data, 'album.name', ''); },
+    albumImage () { return _.get(_.head(_.get(this.data, 'album.images', [])), 'url', ''); },
+    trackUri () { return _.get(this.data, 'uri', ''); },
+    fabColor () { return this.isTrackPlaying ? 'teal' : 'red darken-3'; },
+    fabIcon () { return this.isTrackPlaying ? 'pause' : 'play_arrow'; },
+    trackPreviewUrl () { return _.get(this.data, 'preview_url'); },
+    isTrackPlaying () { return !this.previewTrackPaused; },
+    isTrackLoading () { return this.trackLoading; },
+    hasTrackPreviewUrl () { return !_.isNil(this.trackPreviewUrl); }
   },
   watch: {
     volume: function (newVal, oldVal) {
@@ -194,10 +188,12 @@ export default {
       });
     },
     clickFab () {
-      if (_.get(this.audioTrackPreview, 'paused', true)) {
-        this.playTrackPreview();
-      } else {
-        this.stopTrackPreview();
+      if (this.hasTrackPreviewUrl) {
+        if (_.get(this.audioTrackPreview, 'paused', true)) {
+          this.playTrackPreview();
+        } else {
+          this.stopTrackPreview();
+        }
       }
     },
     setVolume: function (value) {
@@ -233,4 +229,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.pointer {
+  cursor: pointer;
+}
 </style>

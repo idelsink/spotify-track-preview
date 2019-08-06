@@ -1,35 +1,25 @@
 <template lang="html">
   <div>
-    <VAppBar clipped-left>
-      <VToolbarTitle>Spotify track preview</VToolbarTitle>
+    <VAppBar>
+      <VSpacer />
+      <VTextField
+        v-model="searchQuerry"
+        :loading="isSearching"
+        append-outer-icon="share"
+        clearable
+        hide-details
+        hint="For example, Tracks or Albums"
+        label="Search Spotify"
+        single-line
+        @click:append-outer="shareSearchQuery"
+      />
+      <VSpacer />
     </VAppBar>
     <VContainer
-      :grid-list-sm="true"
+      grid-list-md
       fluid
     >
       <VContent v-if="apiAvailable">
-        <!-- Search input -->
-        <VLayout
-          align-center
-          justify-center
-        >
-          <VFlex
-            xs12
-            sm10
-            md8
-            lg6
-          >
-            <VTextField
-              v-model="searchQuerry"
-              :loading="isSearching"
-              clearable
-              label="Search Spotify"
-              hint="For example, Tracks or Albums"
-              append-outer-icon="share"
-              @click:append-outer="shareSearchQuery"
-            />
-          </VFlex>
-        </VLayout>
         <!-- Volume slider -->
         <VLayout
           align-center
@@ -37,8 +27,8 @@
         >
           <VFlex
             xs12
-            sm10
-            md8
+            sm8
+            md6
             lg6
           >
             <VSlider
@@ -56,9 +46,9 @@
         >
           <VFlex
             xs12
-            sm10
-            md8
-            lg6
+            sm12
+            md10
+            lg8
           >
             <div class="text-xs-center">
               <VPagination
@@ -78,11 +68,12 @@
           <VFlex
             v-for="(item, index) in searchResults"
             :key="index"
-            xs12
-            sm6
-            md6
-            lg4
-            xl3
+            fill-height
+            xs6
+            sm4
+            md3
+            lg2
+            xl2
           >
             <TrackCard
               :data="item"
@@ -99,9 +90,9 @@
         >
           <VFlex
             xs12
-            sm10
-            md8
-            lg6
+            sm12
+            md10
+            lg8
           >
             <div class="text-xs-center">
               <VPagination
