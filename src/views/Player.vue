@@ -2,55 +2,65 @@
   <div>
     <VAppBar>
       <VSpacer />
+      <VBtn
+        icon
+        @click="shareSearchQuery"
+      >
+        <VIcon>share</VIcon>
+      </VBtn>
+
       <VTextField
         v-model="searchQuerry"
         :loading="isSearching"
-        append-outer-icon="share"
         clearable
         hide-details
         hint="For example, Tracks or Albums"
         label="Search Spotify"
         single-line
-        @click:append-outer="shareSearchQuery"
       />
+
+      <VMenu
+        bottom
+        nudge-bottom="48"
+        :open-on-hover="true"
+        :close-on-click="true"
+        :close-on-content-click="false"
+      >
+        <template v-slot:activator="{ on }">
+          <VBtn
+            icon
+            v-on="on"
+          >
+            <VIcon>volume_up</VIcon>
+          </VBtn>
+        </template>
+        <VCard flat>
+          <VSlider
+            v-model="volume"
+            vertical
+            hide-details
+          />
+        </VCard>
+      </VMenu>
       <VSpacer />
     </VAppBar>
     <VContainer
-      grid-list-md
       fluid
     >
       <VContent v-if="apiAvailable">
-        <!-- Volume slider -->
-        <VLayout
-          align-center
-          justify-center
-        >
-          <VFlex
-            xs12
-            sm8
-            md6
-            lg6
-          >
-            <VSlider
-              v-model="volume"
-              append-icon="volume_up"
-              prepend-icon="volume_down"
-            />
-          </VFlex>
-        </VLayout>
         <!-- Pagination controls -->
-        <VLayout
+        <VRow
           v-if="searchResultPaginationCount"
-          align-center
-          justify-center
+          align="center"
+          justify="center"
         >
-          <VFlex
-            xs12
-            sm12
-            md10
-            lg8
+          <VCol
+            cols="12"
+            sm="12"
+            md="10"
+            lg="8"
           >
-            <div class="text-xs-center">
+            <div class="text-center">
               <VPagination
                 circle
                 :length="searchResultPaginationCount"
@@ -58,43 +68,42 @@
                 @input="searchPaginatedPage"
               />
             </div>
-          </VFlex>
-        </VLayout>
+          </VCol>
+        </VRow>
         <!-- Results -->
-        <VLayout
-          row
-          wrap
-        >
-          <VFlex
+        <VRow no-gutters>
+          <VCol
             v-for="(item, index) in searchResults"
             :key="index"
-            fill-height
-            xs6
-            sm4
-            md3
-            lg2
-            xl2
+            cols="6"
+            sm="4"
+            md="3"
+            lg="2"
+            xl="2"
+            class="pa-1"
           >
             <TrackCard
+              height="100%"
               :data="item"
               :event-bus="eventBus"
               :volume="volume"
             />
-          </VFlex>
-        </VLayout>
+          </VCol>
+        </VRow>
+
         <!-- Pagination controls -->
-        <VLayout
+        <VRow
           v-if="searchResultPaginationCount"
-          align-center
-          justify-center
+          align="center"
+          justify="center"
         >
-          <VFlex
-            xs12
-            sm12
-            md10
-            lg8
+          <VCol
+            cols="12"
+            sm="12"
+            md="10"
+            lg="8"
           >
-            <div class="text-xs-center">
+            <div class="text-center">
               <VPagination
                 circle
                 :length="searchResultPaginationCount"
@@ -102,31 +111,29 @@
                 @input="searchPaginatedPage"
               />
             </div>
-          </VFlex>
-        </VLayout>
+          </VCol>
+        </VRow>
       </VContent>
       <VContent v-else>
         <!-- Loading -->
         <VContainer fluid>
-          <VLayout
-            column
-            align-center
-            justify-center
-            row
-            fill-height
+          <VRow
+            class="fill-height"
+            align="center"
+            justify="center"
           >
-            <VFlex
-              xs12
-              sm6
-              offset-sm3
+            <VCol
+              cols="12"
+              sm="6"
+              offset-sm="3"
             >
               <VProgressCircular
                 :size="70"
                 color="primary"
                 indeterminate
               />
-            </VFlex>
-          </VLayout>
+            </VCol>
+          </VRow>
         </VContainer>
       </VContent>
     </VContainer>
@@ -144,7 +151,24 @@
         color="#B71C1C"
         icon="heart"
       />
-      <GithubBtn />
+      <VRow
+        class="ml-2 shrink"
+        align="center"
+      >
+        <!-- Limiting the size of the button to fit inside the footer -->
+        <VCard
+          flat
+          max-height="22"
+        >
+          <GithubButton
+            href="https://github.com/idelsink/spotify-track-preview"
+            data-show-count="true"
+            aria-label="Star idelsink/spotify-track-preview on GitHub"
+          >
+            Star
+          </GithubButton>
+        </VCard>
+      </VRow>
     </VFooter>
     <VSnackbar
       v-model="showSnackbar"
@@ -170,13 +194,11 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import TrackCard from '../components/TrackCard';
 import { EventEmitter2 } from 'eventemitter2';
 import AppInfo from '../app-info';
-import GithubBtn from '../components/GithubBtn';
 
 export default {
   name: 'Player',
   components: {
-    TrackCard,
-    GithubBtn
+    TrackCard
   },
   data: () => {
     const Spotify = new SpotifyWebApi();
@@ -189,9 +211,9 @@ export default {
         wildcard: true,
         maxListeners: 200
       }),
-      searchResultLimit: 20,
       volume: 40,
       apiAvailable: false,
+      searchResultLimit: 18,
       searchQuerry: undefined,
       isSearching: false,
       oldSearchRequest: undefined,
@@ -357,6 +379,7 @@ export default {
         page--;
         this.eventBus.emit('audio.stop'); // Make sure that all players stop
         this.searchSpotify(this.searchQuerry, ['track'], { limit: this.searchResultLimit, offset: page * this.searchResultLimit });
+        this.$vuetify.goTo(0); // Go to the top of the screen when switching pages
       }
     }
   },

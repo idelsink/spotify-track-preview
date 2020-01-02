@@ -1,81 +1,86 @@
 <template lang="html">
-  <VCard>
-    <VHover v-slot:default="{ hover }">
-      <VImg
-        :class="{pointer: hasTrackPreviewUrl}"
-        :src="albumImage"
-        aspect-ratio="1"
-        @click="clickFab"
+  <VCard height="100%">
+    <VRow
+      class="fill-height flex-column flex-nowrap"
+      no-gutters
+    >
+      <VCol
+        class="flex-grow-1 flex-shrink-1"
       >
-        <VLayout
-          align-center
-          justify-center
-          row
-          fill-height
-        >
-          <VChip
-            v-if="!hasTrackPreviewUrl"
-            disabled
-            small
+        <VHover v-slot:default="{ hover }">
+          <VImg
+            :class="{pointer: hasTrackPreviewUrl}"
+            :src="albumImage"
+            aspect-ratio="1"
+            @click="clickFab"
           >
-            Preview not available
-          </VChip>
-          <VBtn
-            v-else
-            v-show="hover || isTrackLoading || isTrackPlaying"
-            :disabled="!hasTrackPreviewUrl"
-            :loading="isTrackLoading"
-            large
-            fab
-            :color="fabColor"
-          >
-            <VIcon>{{ fabIcon }}</VIcon>
-          </VBtn>
-        </VLayout>
-      </VImg>
-    </VHover>
-
-    <VCardText>
-      <div class="title">
-        {{ trackName }}
-      </div>
-      <div class="subtitle-2">
-        {{ artistNames }}
-      </div>
-      <div class="subtitle-2 font-weight-light">
-        <VIcon
-          small
-        >
-          fas fa-compact-disc
-        </VIcon>
-        {{ albumName }}
-      </div>
-    </VCardText>
-
-    <VCardActions>
-      <VBtn
-        small
-        text
-        @click="copyTrackUriToClipboard"
-      >
-        Share
-      </VBtn>
-      <VSpacer />
-      <!-- <VBtn
-        small
-        icon
-        @click="show = !show"
-      >
-        <VIcon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</VIcon>
-      </VBtn> -->
-    </VCardActions>
-
-    <!-- <VExpandTransition>
-      <div v-show="show">
+            <VRow
+              class="fill-height"
+              align="center"
+              justify="center"
+            >
+              <VChip
+                v-if="!hasTrackPreviewUrl"
+                title="Preview track not available"
+                disabled
+                small
+              >
+                Preview not available
+              </VChip>
+              <VBtn
+                v-else
+                v-show="hover || isTrackLoading || isTrackPlaying"
+                :disabled="!hasTrackPreviewUrl"
+                :loading="isTrackLoading"
+                large
+                fab
+                :color="fabColor"
+              >
+                <VIcon>{{ fabIcon }}</VIcon>
+              </VBtn>
+            </VRow>
+          </VImg>
+        </VHover>
         <VCardText>
+          <div
+            class="title"
+            title="Title"
+          >
+            {{ trackName }}
+          </div>
+          <div
+            class="subtitle-2"
+            title="Artist"
+          >
+            {{ artistNames }}
+          </div>
+          <div
+            class="subtitle-2 font-weight-light"
+            title="Album"
+          >
+            <VIcon
+              small
+            >
+              fas fa-compact-disc
+            </VIcon>
+            {{ albumName }}
+          </div>
         </VCardText>
-      </div>
-    </VExpandTransition> -->
+      </VCol>
+      <VCol
+        class="flex-grow-0 flex-shrink-0"
+      >
+        <VCardActions>
+          <VBtn
+            small
+            text
+            @click="copyTrackUriToClipboard"
+          >
+            Share
+          </VBtn>
+        </VCardActions>
+      </VCol>
+    </VRow>
 
     <VSnackbar
       v-model="showSnackbar"
@@ -118,7 +123,6 @@ export default {
   },
   data () {
     return {
-      show: false,
       overlay: false,
       audioTrackPreview: undefined,
       previewTrackPaused: true,

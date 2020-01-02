@@ -1,5 +1,6 @@
 import '@babel/polyfill';
 import Vue from 'vue';
+import './plugins/vue-github-button';
 import './plugins/fontawesome';
 import vuetify from './plugins/vuetify';
 import './plugins/localstorage';

@@ -1,13 +1,14 @@
 <template lang="html">
   <VResponsive>
-    <VContainer fill-height>
-      <VLayout
-        justify-center
+    <VContainer>
+      <VRow
+        align="start"
+        justify="center"
       >
-        <VFlex
-          xs12
-          sm10
-          mt-12
+        <VCol
+          class="mt-12"
+          cols="12"
+          sm="10"
         >
           <h3 class="display-2 font-weight-medium">
             Spotify track preview
@@ -29,8 +30,8 @@
           >
             Login
           </VBtn>
-        </VFlex>
-      </VLayout>
+        </VCol>
+      </VRow>
     </VContainer>
   </VResponsive>
 </template>
