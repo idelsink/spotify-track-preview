@@ -68,7 +68,6 @@ export default {
       if ([
         'access_token',
         'expires_in',
-        'state',
         'token_type'
       ].every(k => k in params) && _.get(params, 'expires_in', 0) > 0) {
         console.log('Got access token successfully');
